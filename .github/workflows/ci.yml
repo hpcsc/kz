@@ -24,5 +24,8 @@ jobs:
     - name: Build
       run: task build
 
-    - name: Test
-      run: task test
+    - name: Run unit test
+      run: task test:unit
+
+    - name: Run e2e test
+      run: task test:e2e

@@ -10,7 +10,7 @@ builds:
       - darwin
     main: ./cmd/kz
     ldflags:
-      - -extldflags -static -X 'main.Version={{.Version}}'
+      - -extldflags -static -X 'github.com/hpcsc/kz/internal/cmd.Version={{.Version}}'
 
 archives:
   - format: tar.gz

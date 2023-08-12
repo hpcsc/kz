@@ -1,0 +1,10 @@
+version: '3'
+
+tasks:
+  unit:
+    cmds:
+      - go test -tags=unit -v ./...
+
+  e2e:
+    cmds:
+      - go test -tags=e2e -v ./...

@@ -1,0 +1,2 @@
+exec kz --version
+stdout 'kz version main'
