@@ -1,0 +1,13 @@
+exec kz ns add ns1 ns2
+stdout 'ns1, ns2 added'
+exec kz ns list
+stdout 'ns1\n'
+stdout 'ns2\n'
+exec kz ns delete ns2
+stdout 'ns2 deleted'
+exec kz ns list
+stdout 'ns1\n'
+exec kz ns delete ns1
+stdout 'ns1 deleted'
+exec kz ns list
+stdout 'no namespaces available'
