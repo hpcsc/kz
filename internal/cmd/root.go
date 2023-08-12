@@ -10,10 +10,12 @@ var Version = "main"
 
 func Run() int {
 	app := &cli.App{
-		Name:     "kz",
-		Usage:    "switch Kubernetes namespace and context using partial name",
-		Version:  Version,
-		Commands: []*cli.Command{},
+		Name:    "kz",
+		Usage:   "switch Kubernetes namespace and context using partial name",
+		Version: Version,
+		Commands: []*cli.Command{
+			newNamespaceSubcommand(),
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
