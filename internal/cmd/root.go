@@ -13,6 +13,7 @@ func Run() int {
 		Name:    "kz",
 		Usage:   "switch Kubernetes namespace and context using partial name",
 		Version: Version,
+		Action:  switchFromRoot,
 		Commands: []*cli.Command{
 			newNamespaceSubcommand(),
 			newContextSubcommand(),
@@ -25,4 +26,8 @@ func Run() int {
 	}
 
 	return 0
+}
+
+func switchFromRoot(ctx *cli.Context) error {
+	return switchContext(ctx)
 }
