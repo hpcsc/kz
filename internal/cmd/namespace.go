@@ -60,6 +60,11 @@ func listNamespaces(ctx *cli.Context) error {
 		return err
 	}
 
+	if len(c.Namespaces) == 0 {
+		fmt.Println("no namespaces available")
+		return nil
+	}
+
 	for _, n := range c.Namespaces {
 		fmt.Println(n)
 	}
