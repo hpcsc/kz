@@ -18,6 +18,11 @@ func newNamespaceSubcommand() *cli.Command {
 				Usage:  "track a Kubernetes namespace",
 				Action: addNamespaces,
 			},
+			{
+				Name:   "list",
+				Usage:  "list tracked Kubernetes namespaces",
+				Action: listNamespaces,
+			},
 		},
 	}
 }
@@ -40,6 +45,19 @@ func addNamespaces(ctx *cli.Context) error {
 	}
 
 	color.Green(fmt.Sprintf("namespace(s) %s added", strings.Join(toBeAdded, ", ")))
+
+	return nil
+}
+
+func listNamespaces(ctx *cli.Context) error {
+	c, err := config.LoadFromDefaultLocation()
+	if err != nil {
+		return err
+	}
+
+	for _, n := range c.Namespaces {
+		fmt.Println(n)
+	}
 
 	return nil
 }
