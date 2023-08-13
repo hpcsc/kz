@@ -15,6 +15,7 @@ func Run() int {
 		Version: Version,
 		Commands: []*cli.Command{
 			newNamespaceSubcommand(),
+			newContextSubcommand(),
 		},
 	}
 
