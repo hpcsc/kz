@@ -18,6 +18,11 @@ func newContextSubcommand() *cli.Command {
 				Usage:  "sync Kubernetes contexts from kube config files",
 				Action: syncContexts,
 			},
+			{
+				Name:   "list",
+				Usage:  "list available Kubernetes contexts",
+				Action: listContexts,
+			},
 		},
 	}
 }
@@ -40,6 +45,19 @@ func syncContexts(ctx *cli.Context) error {
 	}
 
 	color.Green(fmt.Sprintf("%d contexts synced", len(contexts)))
+
+	return nil
+}
+
+func listContexts(ctx *cli.Context) error {
+	cfg, err := config.LoadFromDefaultLocation()
+	if err != nil {
+		return err
+	}
+
+	for _, c := range cfg.Contexts {
+		fmt.Println(c)
+	}
 
 	return nil
 }
