@@ -43,6 +43,35 @@ func TestSwitchContextTo(t *testing.T) {
 	})
 }
 
+func TestSwitchNamespaceTo(t *testing.T) {
+	t.Run("return error when current context is not set", func(t *testing.T) {
+		destinationConfigPath := path.Join(os.TempDir(), fmt.Sprintf("kz-kube-config-%d", time.Now().UnixMilli()))
+		copyFile(t, "testdata/kubeconfig-1", destinationConfigPath)
+		defer os.Remove(destinationConfigPath)
+
+		err := SwitchNamespaceTo("ns2", destinationConfigPath)
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "unable to switch namespace to ns2 because current context is not set")
+	})
+
+	t.Run("set namespace of current context", func(t *testing.T) {
+		destinationConfigPath := path.Join(os.TempDir(), fmt.Sprintf("kz-kube-config-%d", time.Now().UnixMilli()))
+		copyFile(t, "testdata/kubeconfig-1", destinationConfigPath)
+		defer os.Remove(destinationConfigPath)
+
+		err := SwitchContextTo("context-2", destinationConfigPath)
+		require.NoError(t, err)
+
+		err = SwitchNamespaceTo("ns2", destinationConfigPath)
+		require.NoError(t, err)
+
+		content, err := os.ReadFile(destinationConfigPath)
+		require.NoError(t, err)
+		require.Contains(t, string(content), "namespace: ns2")
+	})
+}
+
 func copyFile(t *testing.T, sourcePath string, destinationPath string) {
 	data, err := os.ReadFile(sourcePath)
 	require.NoError(t, err)

@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/hpcsc/kz/internal/config"
+	"github.com/hpcsc/kz/internal/kube"
 	"github.com/urfave/cli/v2"
+	"k8s.io/client-go/tools/clientcmd"
 	"strings"
 )
 
@@ -12,6 +14,7 @@ func newNamespaceSubcommand() *cli.Command {
 	return &cli.Command{
 		Name:    "ns",
 		Aliases: []string{"namespace"},
+		Action:  switchNamespace,
 		Subcommands: []*cli.Command{
 			{
 				Name:   "add",
@@ -91,5 +94,33 @@ func deleteNamespaces(ctx *cli.Context) error {
 
 	color.Green(fmt.Sprintf("namespace(s) %s deleted", strings.Join(toBeDeleted, ", ")))
 
+	return nil
+}
+
+func switchNamespace(ctx *cli.Context) error {
+	query := ctx.Args().First()
+	if len(query) == 0 {
+		return fmt.Errorf("namespace name query is required")
+	}
+
+	cfg, err := config.LoadFromDefaultLocation()
+	if err != nil {
+		return err
+	}
+
+	destinationNamespaces := cfg.NamespacesMatching(query)
+	var namespaceToSwitch string
+	if len(destinationNamespaces) == 0 {
+		namespaceToSwitch = query
+	} else {
+		namespaceToSwitch = destinationNamespaces[0]
+	}
+
+	// switched to 1st matching namespace for now
+	if err := kube.SwitchNamespaceTo(namespaceToSwitch, clientcmd.RecommendedHomeFile); err != nil {
+		return err
+	}
+
+	color.Green(fmt.Sprintf("switched to namespace %s", namespaceToSwitch))
 	return nil
 }

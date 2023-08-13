@@ -35,6 +35,25 @@ func SwitchContextTo(ctx string, destinationConfigPath string) error {
 	return nil
 }
 
+func SwitchNamespaceTo(namespace string, destinationConfigPath string) error {
+	kubeConfig, err := clientcmd.LoadFromFile(destinationConfigPath)
+	if err != nil {
+		return fmt.Errorf("failed to load kube config from %s: %v", destinationConfigPath, err)
+	}
+
+	if len(kubeConfig.CurrentContext) == 0 {
+		return fmt.Errorf("unable to switch namespace to %s because current context is not set", namespace)
+	}
+
+	kubeConfig.Contexts[kubeConfig.CurrentContext].Namespace = namespace
+
+	if err := clientcmd.WriteToFile(*kubeConfig, destinationConfigPath); err != nil {
+		return fmt.Errorf("failed to write updated kube config to %s: %v", destinationConfigPath, err)
+	}
+
+	return nil
+}
+
 func config() (api.Config, error) {
 	// loading rules able to handle KUBECONFIG variable if set
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
