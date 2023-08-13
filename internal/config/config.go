@@ -10,6 +10,7 @@ import (
 )
 
 type Config struct {
+	Contexts   []string
 	Namespaces []string
 }
 

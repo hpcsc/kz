@@ -1,3 +1,6 @@
+contexts:
+  - context1
+  - context2
 namespaces:
   - ns1
   - ns2

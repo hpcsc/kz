@@ -61,6 +61,10 @@ func TestLoad(t *testing.T) {
 
 		require.NoError(t, err)
 		require.Equal(t, &Config{
+			Contexts: []string{
+				"context1",
+				"context2",
+			},
 			Namespaces: []string{
 				"ns1",
 				"ns2",
@@ -75,6 +79,10 @@ func TestSave(t *testing.T) {
 		defer os.Remove(destinationFile)
 
 		err := Save(destinationFile, &Config{
+			Contexts: []string{
+				"context1",
+				"context2",
+			},
 			Namespaces: []string{
 				"ns1",
 				"ns2",
@@ -82,9 +90,12 @@ func TestSave(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		content, err := os.ReadFile(destinationFile)
+		contentAsByte, err := os.ReadFile(destinationFile)
+		content := string(contentAsByte)
 		require.NoError(t, err)
-		require.Contains(t, string(content), "ns1")
-		require.Contains(t, string(content), "ns2")
+		require.Contains(t, content, "context1")
+		require.Contains(t, content, "context2")
+		require.Contains(t, content, "ns1")
+		require.Contains(t, content, "ns2")
 	})
 }
