@@ -1,0 +1,63 @@
+env KUBECONFIG=kubeconfig-1:kubeconfig-2
+exec kz ctx sync
+stdout '3 contexts synced'
+exec kz ctx list
+stdout 'context-1\n'
+stdout 'context-2\n'
+stdout 'context-3\n'
+
+-- kubeconfig-1 --
+apiVersion: v1
+kind: Config
+preferences: {}
+clusters:
+- cluster:
+    certificate-authority: /path/to/ca.crt
+    server: https://some-kube-api:8443
+  name: cluster-1
+contexts:
+- context:
+    cluster: cluster-1
+    user: user-1
+  name: context-1
+- context:
+    cluster: cluster-1
+    user: user-2
+  name: context-2
+users:
+- name: user-1
+  user:
+    client-certificate: /path/to/client.crt
+    client-key: /path/to/client.key
+- name: user-2
+  user:
+    client-certificate: /path/to/client.crt
+    client-key: /path/to/client.key
+
+-- kubeconfig-2 --
+apiVersion: v1
+kind: Config
+preferences: {}
+clusters:
+- cluster:
+    certificate-authority: /path/to/ca.crt
+    server: https://some-kube-api:8443
+  name: cluster-1
+contexts:
+- context:
+    cluster: cluster-1
+    user: user-1
+  name: context-2
+- context:
+    cluster: cluster-1
+    user: user-2
+  name: context-3
+users:
+- name: user-1
+  user:
+    client-certificate: /path/to/client.crt
+    client-key: /path/to/client.key
+- name: user-2
+  user:
+    client-certificate: /path/to/client.crt
+    client-key: /path/to/client.key
