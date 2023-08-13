@@ -21,6 +21,16 @@ func (c *Config) AddNamespaces(namespaces ...string) {
 	}
 }
 
+func (c *Config) DeleteNamespaces(namespaces ...string) {
+	var afterDeletion []string
+	for _, n := range c.Namespaces {
+		if !slices.Contains(namespaces, n) {
+			afterDeletion = append(afterDeletion, n)
+		}
+	}
+	c.Namespaces = afterDeletion
+}
+
 func LoadFromDefaultLocation() (*Config, error) {
 	location, err := defaultConfigLocation()
 	if err != nil {

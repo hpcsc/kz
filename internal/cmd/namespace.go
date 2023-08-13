@@ -23,6 +23,11 @@ func newNamespaceSubcommand() *cli.Command {
 				Usage:  "list tracked Kubernetes namespaces",
 				Action: listNamespaces,
 			},
+			{
+				Name:   "delete",
+				Usage:  "delete tracked Kubernetes namespaces",
+				Action: deleteNamespaces,
+			},
 		},
 	}
 }
@@ -58,6 +63,28 @@ func listNamespaces(ctx *cli.Context) error {
 	for _, n := range c.Namespaces {
 		fmt.Println(n)
 	}
+
+	return nil
+}
+
+func deleteNamespaces(ctx *cli.Context) error {
+	toBeDeleted := ctx.Args().Slice()
+	if len(toBeDeleted) == 0 {
+		return fmt.Errorf("no namespaces provided")
+	}
+
+	c, err := config.LoadFromDefaultLocation()
+	if err != nil {
+		return err
+	}
+
+	c.DeleteNamespaces(toBeDeleted...)
+
+	if err := config.SaveToDefaultLocation(c); err != nil {
+		return err
+	}
+
+	color.Green(fmt.Sprintf("namespace(s) %s deleted", strings.Join(toBeDeleted, ", ")))
 
 	return nil
 }

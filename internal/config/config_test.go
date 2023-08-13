@@ -28,6 +28,24 @@ func TestConfig(t *testing.T) {
 			"ns3",
 		}, c.Namespaces)
 	})
+
+	t.Run("able to delete multiple namespaces", func(t *testing.T) {
+		c := Config{
+			Namespaces: []string{
+				"ns1",
+				"ns2",
+				"ns3",
+				"ns4",
+			},
+		}
+
+		c.DeleteNamespaces("ns1", "ns3")
+
+		require.Equal(t, []string{
+			"ns2",
+			"ns4",
+		}, c.Namespaces)
+	})
 }
 
 func TestLoad(t *testing.T) {
