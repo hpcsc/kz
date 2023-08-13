@@ -61,6 +61,21 @@ func TestConfig(t *testing.T) {
 
 		require.Equal(t, []string{"context2"}, contexts)
 	})
+
+	t.Run("return all namespaces that partially match given query", func(t *testing.T) {
+		c := Config{
+			Namespaces: []string{
+				"ns1",
+				"ns2",
+				"ns3",
+				"ns4",
+			},
+		}
+
+		namespaces := c.NamespacesMatching("2")
+
+		require.Equal(t, []string{"ns2"}, namespaces)
+	})
 }
 
 func TestLoad(t *testing.T) {

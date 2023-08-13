@@ -43,6 +43,16 @@ func (c *Config) ContextsMatching(query string) []string {
 	return contexts
 }
 
+func (c *Config) NamespacesMatching(query string) []string {
+	var namespaces []string
+	for _, n := range c.Namespaces {
+		if strings.Contains(n, query) {
+			namespaces = append(namespaces, n)
+		}
+	}
+	return namespaces
+}
+
 func LoadFromDefaultLocation() (*Config, error) {
 	location, err := defaultConfigLocation()
 	if err != nil {
