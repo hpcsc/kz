@@ -46,6 +46,21 @@ func TestConfig(t *testing.T) {
 			"ns4",
 		}, c.Namespaces)
 	})
+
+	t.Run("return all contexts that partially match given query", func(t *testing.T) {
+		c := Config{
+			Contexts: []string{
+				"context1",
+				"context2",
+				"context3",
+				"context4",
+			},
+		}
+
+		contexts := c.ContextsMatching("2")
+
+		require.Equal(t, []string{"context2"}, contexts)
+	})
 }
 
 func TestLoad(t *testing.T) {

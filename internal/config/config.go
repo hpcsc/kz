@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"slices"
+	"strings"
 )
 
 type Config struct {
@@ -30,6 +31,16 @@ func (c *Config) DeleteNamespaces(namespaces ...string) {
 		}
 	}
 	c.Namespaces = afterDeletion
+}
+
+func (c *Config) ContextsMatching(query string) []string {
+	var contexts []string
+	for _, ctx := range c.Contexts {
+		if strings.Contains(ctx, query) {
+			contexts = append(contexts, ctx)
+		}
+	}
+	return contexts
 }
 
 func LoadFromDefaultLocation() (*Config, error) {
