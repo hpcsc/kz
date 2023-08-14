@@ -1,0 +1,36 @@
+mkdir $HOME/.kube
+cp kubeconfig $HOME/.kube/config
+exec kz ctx sync
+exec kz ns add ns1
+exec kz 2 1
+stdout 'switched to context context-2, namespace ns1'
+exec kz 2 not-existing
+stdout 'switched to context context-2, namespace not-existing'
+
+-- kubeconfig --
+apiVersion: v1
+kind: Config
+preferences: {}
+clusters:
+- cluster:
+    certificate-authority: /path/to/ca.crt
+    server: https://some-kube-api:8443
+  name: cluster-1
+contexts:
+- context:
+    cluster: cluster-1
+    user: user-1
+  name: context-1
+- context:
+    cluster: cluster-1
+    user: user-2
+  name: context-2
+users:
+- name: user-1
+  user:
+    client-certificate: /path/to/client.crt
+    client-key: /path/to/client.key
+- name: user-2
+  user:
+    client-certificate: /path/to/client.crt
+    client-key: /path/to/client.key
