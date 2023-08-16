@@ -8,3 +8,10 @@ tasks:
   e2e:
     cmds:
       - go test -tags=e2e -v ./...
+
+  shellcheck:
+    preconditions:
+      - sh: command -v shellcheck
+        msg: Please follow instruction at https://github.com/koalaman/shellcheck#installing to install shellcheck
+    cmds:
+      - shellcheck -S error ./hooks/*

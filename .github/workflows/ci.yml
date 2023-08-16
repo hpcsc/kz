@@ -21,6 +21,9 @@ jobs:
       with:
         go-version-file: 'go.mod'
 
+    - name: Run shellcheck
+      run: task test:shellcheck
+
     - name: Build
       run: task build
 
