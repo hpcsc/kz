@@ -5,6 +5,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/hpcsc/kz/internal/config"
 	"github.com/hpcsc/kz/internal/kube"
+	"github.com/hpcsc/kz/internal/tui"
 	"github.com/urfave/cli/v2"
 	"k8s.io/client-go/tools/clientcmd"
 	"strings"
@@ -112,11 +113,15 @@ func switchNamespace(ctx *cli.Context) error {
 	var namespaceToSwitch string
 	if len(destinationNamespaces) == 0 {
 		namespaceToSwitch = query
-	} else {
+	} else if len(destinationNamespaces) == 1 {
 		namespaceToSwitch = destinationNamespaces[0]
+	} else {
+		namespaceToSwitch, err = tui.ShowDropdown("Please select a namespace", destinationNamespaces)
+		if err != nil {
+			return err
+		}
 	}
 
-	// switched to 1st matching namespace for now
 	if err := kube.SwitchNamespaceTo(namespaceToSwitch, clientcmd.RecommendedHomeFile); err != nil {
 		return err
 	}

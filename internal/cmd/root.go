@@ -5,6 +5,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/hpcsc/kz/internal/config"
 	"github.com/hpcsc/kz/internal/kube"
+	"github.com/hpcsc/kz/internal/tui"
 	"github.com/urfave/cli/v2"
 	"k8s.io/client-go/tools/clientcmd"
 	"os"
@@ -56,20 +57,34 @@ func switchContextAndNamespace(ctx *cli.Context) error {
 		return fmt.Errorf("no contexts matched query '%s'", contextQuery)
 	}
 
+	var contextToSwitch string
+	if len(destinationContexts) == 1 {
+		contextToSwitch = destinationContexts[0]
+	} else {
+		contextToSwitch, err = tui.ShowDropdown("Please select a context", destinationContexts)
+		if err != nil {
+			return err
+		}
+	}
+
 	destinationNamespaces := cfg.NamespacesMatching(namespaceQuery)
 	var namespaceToSwitch string
 	if len(destinationNamespaces) == 0 {
 		namespaceToSwitch = namespaceQuery
-	} else {
+	} else if len(destinationNamespaces) == 1 {
 		namespaceToSwitch = destinationNamespaces[0]
+	} else {
+		namespaceToSwitch, err = tui.ShowDropdown("Please select a namespace", destinationNamespaces)
+		if err != nil {
+			return err
+		}
 	}
 
-	// switched to 1st matching context and namespace for now
-	if err := kube.SwitchContextAndNamespace(destinationContexts[0], namespaceToSwitch, clientcmd.RecommendedHomeFile); err != nil {
+	if err := kube.SwitchContextAndNamespace(contextToSwitch, namespaceToSwitch, clientcmd.RecommendedHomeFile); err != nil {
 		return err
 	}
 
-	color.Green(fmt.Sprintf("switched to context %s, namespace %s", destinationContexts[0], namespaceToSwitch))
+	color.Green(fmt.Sprintf("switched to context %s, namespace %s", contextToSwitch, namespaceToSwitch))
 
 	return nil
 }

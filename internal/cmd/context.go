@@ -5,6 +5,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/hpcsc/kz/internal/config"
 	"github.com/hpcsc/kz/internal/kube"
+	"github.com/hpcsc/kz/internal/tui"
 	"github.com/urfave/cli/v2"
 	"k8s.io/client-go/tools/clientcmd"
 )
@@ -80,12 +81,21 @@ func switchContext(ctx *cli.Context) error {
 		return fmt.Errorf("no contexts matched query '%s'", query)
 	}
 
-	// switched to 1st matching context for now
-	if err := kube.SwitchContextTo(destinationContexts[0], clientcmd.RecommendedHomeFile); err != nil {
+	var contextToSwitch string
+	if len(destinationContexts) == 1 {
+		contextToSwitch = destinationContexts[0]
+	} else {
+		contextToSwitch, err = tui.ShowDropdown("Please select a context", destinationContexts)
+		if err != nil {
+			return err
+		}
+	}
+
+	if err := kube.SwitchContextTo(contextToSwitch, clientcmd.RecommendedHomeFile); err != nil {
 		return err
 	}
 
-	color.Green(fmt.Sprintf("switched to context %s", destinationContexts[0]))
+	color.Green(fmt.Sprintf("switched to context %s", contextToSwitch))
 
 	return nil
 }
