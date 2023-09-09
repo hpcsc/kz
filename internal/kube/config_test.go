@@ -120,24 +120,8 @@ func TestSwitchNamespaceTo(t *testing.T) {
 }
 
 func TestSwitchContextAndNamespace(t *testing.T) {
-	t.Run("set current context and namespace", func(t *testing.T) {
-		destinationConfigPath := path.Join(os.TempDir(), fmt.Sprintf("kz-kube-config-%d", time.Now().UnixMilli()))
-		copyFile(t, "testdata/kubeconfig-1", destinationConfigPath)
-		defer os.Remove(destinationConfigPath)
-
-		err := SwitchContextAndNamespace("context-2", "ns2", destinationConfigPath)
-		require.NoError(t, err)
-
-		content, err := os.ReadFile(destinationConfigPath)
-		require.NoError(t, err)
-		require.Contains(t, string(content), "current-context: context-2")
-		require.Contains(t, string(content), "namespace: ns2")
-	})
-}
-
-func TestSwitchContextAndNamespaceNew(t *testing.T) {
 	t.Run("return error when context to switch is empty", func(t *testing.T) {
-		err := SwitchContextAndNamespaceNew("", "ns1")
+		err := SwitchContextAndNamespace("", "ns1")
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "context to switch to is required")
@@ -150,7 +134,7 @@ func TestSwitchContextAndNamespaceNew(t *testing.T) {
 		os.Setenv("KUBECONFIG", destinationConfigPath)
 		defer os.Unsetenv("KUBECONFIG")
 
-		err := SwitchContextAndNamespaceNew("context-3", "ns1")
+		err := SwitchContextAndNamespace("context-3", "ns1")
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "context with name context-3 does not exist in kube config file(s)")
@@ -163,7 +147,7 @@ func TestSwitchContextAndNamespaceNew(t *testing.T) {
 		os.Setenv("KUBECONFIG", destinationConfigPath)
 		defer os.Unsetenv("KUBECONFIG")
 
-		err := SwitchContextAndNamespaceNew("context-2", "ns2")
+		err := SwitchContextAndNamespace("context-2", "ns2")
 		require.NoError(t, err)
 
 		content, err := os.ReadFile(destinationConfigPath)
@@ -171,12 +155,6 @@ func TestSwitchContextAndNamespaceNew(t *testing.T) {
 		require.Contains(t, string(content), "current-context: context-2")
 		require.Contains(t, string(content), "namespace: ns2")
 	})
-}
-
-func copyFile(t *testing.T, sourcePath string, destinationPath string) {
-	data, err := os.ReadFile(sourcePath)
-	require.NoError(t, err)
-	require.NoError(t, os.WriteFile(destinationPath, data, 0644))
 }
 
 func copyFileToTmp(t *testing.T, sourcePath string) string {

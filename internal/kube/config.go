@@ -69,23 +69,7 @@ func SwitchNamespaceTo(namespace string) error {
 	return nil
 }
 
-func SwitchContextAndNamespace(ctx string, namespace string, destinationConfigPath string) error {
-	kubeConfig, err := clientcmd.LoadFromFile(destinationConfigPath)
-	if err != nil {
-		return fmt.Errorf("failed to load kube config from %s: %v", destinationConfigPath, err)
-	}
-
-	kubeConfig.CurrentContext = ctx
-	kubeConfig.Contexts[ctx].Namespace = namespace
-
-	if err := clientcmd.WriteToFile(*kubeConfig, destinationConfigPath); err != nil {
-		return fmt.Errorf("failed to write updated kube config to %s: %v", destinationConfigPath, err)
-	}
-
-	return nil
-}
-
-func SwitchContextAndNamespaceNew(ctx string, namespace string) error {
+func SwitchContextAndNamespace(ctx string, namespace string) error {
 	if len(ctx) == 0 {
 		return errors.New("context to switch to is required")
 	}
