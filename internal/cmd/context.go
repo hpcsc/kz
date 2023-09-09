@@ -90,7 +90,7 @@ func switchContext(ctx *cli.Context) error {
 		}
 	}
 
-	if err := kube.SwitchContextToNew(contextToSwitch); err != nil {
+	if err := kube.SwitchContextTo(contextToSwitch); err != nil {
 		return err
 	}
 

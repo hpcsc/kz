@@ -29,23 +29,8 @@ func TestContextsFromConfig(t *testing.T) {
 }
 
 func TestSwitchContextTo(t *testing.T) {
-	t.Run("set current context to given context", func(t *testing.T) {
-		destinationConfigPath := path.Join(os.TempDir(), fmt.Sprintf("kz-kube-config-%d", time.Now().UnixMilli()))
-		copyFile(t, "testdata/kubeconfig-1", destinationConfigPath)
-		defer os.Remove(destinationConfigPath)
-
-		err := SwitchContextTo("context-3", destinationConfigPath)
-		require.NoError(t, err)
-
-		content, err := os.ReadFile(destinationConfigPath)
-		require.NoError(t, err)
-		require.Contains(t, string(content), "current-context: context-3")
-	})
-}
-
-func TestSwitchContextToNew(t *testing.T) {
 	t.Run("return error when context to switch is empty", func(t *testing.T) {
-		err := SwitchContextToNew("")
+		err := SwitchContextTo("")
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "context to switch to is required")
@@ -58,7 +43,7 @@ func TestSwitchContextToNew(t *testing.T) {
 		os.Setenv("KUBECONFIG", destinationConfigPath)
 		defer os.Unsetenv("KUBECONFIG")
 
-		err := SwitchContextToNew("context-3")
+		err := SwitchContextTo("context-3")
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "context with name context-3 does not exist in kube config file(s)")
@@ -71,7 +56,7 @@ func TestSwitchContextToNew(t *testing.T) {
 		os.Setenv("KUBECONFIG", destinationConfigPath)
 		defer os.Unsetenv("KUBECONFIG")
 
-		err := SwitchContextToNew("context-2")
+		err := SwitchContextTo("context-2")
 		require.NoError(t, err)
 
 		content, err := os.ReadFile(destinationConfigPath)
@@ -88,7 +73,7 @@ func TestSwitchContextToNew(t *testing.T) {
 		os.Setenv("KUBECONFIG", fmt.Sprintf("%s:%s", config1Path, config2Path))
 		defer os.Unsetenv("KUBECONFIG")
 
-		err := SwitchContextToNew("context-3")
+		err := SwitchContextTo("context-3")
 		require.NoError(t, err)
 
 		content, err := os.ReadFile(config1Path)
@@ -98,37 +83,8 @@ func TestSwitchContextToNew(t *testing.T) {
 }
 
 func TestSwitchNamespaceTo(t *testing.T) {
-	t.Run("return error when current context is not set", func(t *testing.T) {
-		destinationConfigPath := path.Join(os.TempDir(), fmt.Sprintf("kz-kube-config-%d", time.Now().UnixMilli()))
-		copyFile(t, "testdata/kubeconfig-1", destinationConfigPath)
-		defer os.Remove(destinationConfigPath)
-
-		err := SwitchNamespaceTo("ns2", destinationConfigPath)
-
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "unable to switch namespace to ns2 because current context is not set")
-	})
-
-	t.Run("set namespace of current context", func(t *testing.T) {
-		destinationConfigPath := path.Join(os.TempDir(), fmt.Sprintf("kz-kube-config-%d", time.Now().UnixMilli()))
-		copyFile(t, "testdata/kubeconfig-1", destinationConfigPath)
-		defer os.Remove(destinationConfigPath)
-
-		err := SwitchContextTo("context-2", destinationConfigPath)
-		require.NoError(t, err)
-
-		err = SwitchNamespaceTo("ns2", destinationConfigPath)
-		require.NoError(t, err)
-
-		content, err := os.ReadFile(destinationConfigPath)
-		require.NoError(t, err)
-		require.Contains(t, string(content), "namespace: ns2")
-	})
-}
-
-func TestSwitchNamespaceToNew(t *testing.T) {
 	t.Run("return error when namespace to switch to is empty", func(t *testing.T) {
-		err := SwitchNamespaceToNew("")
+		err := SwitchNamespaceTo("")
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "namespace to switch to is required")
@@ -141,7 +97,7 @@ func TestSwitchNamespaceToNew(t *testing.T) {
 		os.Setenv("KUBECONFIG", destinationConfigPath)
 		defer os.Unsetenv("KUBECONFIG")
 
-		err := SwitchNamespaceToNew("ns2")
+		err := SwitchNamespaceTo("ns2")
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "unable to switch namespace to ns2 because current context is not set")
@@ -154,7 +110,7 @@ func TestSwitchNamespaceToNew(t *testing.T) {
 		os.Setenv("KUBECONFIG", destinationConfigPath)
 		defer os.Unsetenv("KUBECONFIG")
 
-		err := SwitchNamespaceToNew("ns2")
+		err := SwitchNamespaceTo("ns2")
 		require.NoError(t, err)
 
 		content, err := os.ReadFile(destinationConfigPath)

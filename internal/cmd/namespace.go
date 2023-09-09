@@ -121,7 +121,7 @@ func switchNamespace(ctx *cli.Context) error {
 		}
 	}
 
-	if err := kube.SwitchNamespaceToNew(namespaceToSwitch); err != nil {
+	if err := kube.SwitchNamespaceTo(namespaceToSwitch); err != nil {
 		return err
 	}
 

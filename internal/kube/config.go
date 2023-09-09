@@ -21,22 +21,7 @@ func ContextsFromConfig() ([]string, error) {
 	return contexts, nil
 }
 
-func SwitchContextTo(ctx string, destinationConfigPath string) error {
-	kubeConfig, err := clientcmd.LoadFromFile(destinationConfigPath)
-	if err != nil {
-		return fmt.Errorf("failed to load kube config from %s: %v", destinationConfigPath, err)
-	}
-
-	kubeConfig.CurrentContext = ctx
-
-	if err := clientcmd.WriteToFile(*kubeConfig, destinationConfigPath); err != nil {
-		return fmt.Errorf("failed to write updated kube config to %s: %v", destinationConfigPath, err)
-	}
-
-	return nil
-}
-
-func SwitchContextToNew(ctx string) error {
+func SwitchContextTo(ctx string) error {
 	if len(ctx) == 0 {
 		return errors.New("context to switch to is required")
 	}
@@ -60,26 +45,7 @@ func SwitchContextToNew(ctx string) error {
 	return nil
 }
 
-func SwitchNamespaceTo(namespace string, destinationConfigPath string) error {
-	kubeConfig, err := clientcmd.LoadFromFile(destinationConfigPath)
-	if err != nil {
-		return fmt.Errorf("failed to load kube config from %s: %v", destinationConfigPath, err)
-	}
-
-	if len(kubeConfig.CurrentContext) == 0 {
-		return fmt.Errorf("unable to switch namespace to %s because current context is not set", namespace)
-	}
-
-	kubeConfig.Contexts[kubeConfig.CurrentContext].Namespace = namespace
-
-	if err := clientcmd.WriteToFile(*kubeConfig, destinationConfigPath); err != nil {
-		return fmt.Errorf("failed to write updated kube config to %s: %v", destinationConfigPath, err)
-	}
-
-	return nil
-}
-
-func SwitchNamespaceToNew(namespace string) error {
+func SwitchNamespaceTo(namespace string) error {
 	if len(namespace) == 0 {
 		return errors.New("namespace to switch to is required")
 	}
