@@ -1,6 +1,7 @@
 package kube
 
 import (
+	"errors"
 	"fmt"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
@@ -30,6 +31,30 @@ func SwitchContextTo(ctx string, destinationConfigPath string) error {
 
 	if err := clientcmd.WriteToFile(*kubeConfig, destinationConfigPath); err != nil {
 		return fmt.Errorf("failed to write updated kube config to %s: %v", destinationConfigPath, err)
+	}
+
+	return nil
+}
+
+func SwitchContextToNew(ctx string) error {
+	if len(ctx) == 0 {
+		return errors.New("context to switch to is required")
+	}
+
+	ca := clientcmd.NewDefaultPathOptions()
+	cfg, err := ca.GetStartingConfig()
+	if err != nil {
+		return fmt.Errorf("failed to get starting config: %v", err)
+	}
+
+	if !contextExists(cfg.Contexts, ctx) {
+		return fmt.Errorf("context with name %s does not exist in kube config file(s)", ctx)
+	}
+
+	cfg.CurrentContext = ctx
+
+	if err := clientcmd.ModifyConfig(ca, *cfg, true); err != nil {
+		return fmt.Errorf("failed to modify config: %v", err)
 	}
 
 	return nil
@@ -80,4 +105,14 @@ func config() (api.Config, error) {
 	}
 
 	return kubeConfig, nil
+}
+
+func contextExists(contexts map[string]*api.Context, ctx string) bool {
+	for c := range contexts {
+		if c == ctx {
+			return true
+		}
+	}
+
+	return false
 }
