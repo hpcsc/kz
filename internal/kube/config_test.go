@@ -135,6 +135,44 @@ func TestSwitchContextAndNamespace(t *testing.T) {
 	})
 }
 
+func TestSwitchContextAndNamespaceNew(t *testing.T) {
+	t.Run("return error when context to switch is empty", func(t *testing.T) {
+		err := SwitchContextAndNamespaceNew("", "ns1")
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "context to switch to is required")
+	})
+
+	t.Run("return error when context to switch to not exists in config files", func(t *testing.T) {
+		destinationConfigPath := copyFileToTmp(t, "testdata/kubeconfig-1")
+		defer os.Remove(destinationConfigPath)
+
+		os.Setenv("KUBECONFIG", destinationConfigPath)
+		defer os.Unsetenv("KUBECONFIG")
+
+		err := SwitchContextAndNamespaceNew("context-3", "ns1")
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "context with name context-3 does not exist in kube config file(s)")
+	})
+
+	t.Run("set current context and namespace", func(t *testing.T) {
+		destinationConfigPath := copyFileToTmp(t, "testdata/kubeconfig-1")
+		defer os.Remove(destinationConfigPath)
+
+		os.Setenv("KUBECONFIG", destinationConfigPath)
+		defer os.Unsetenv("KUBECONFIG")
+
+		err := SwitchContextAndNamespaceNew("context-2", "ns2")
+		require.NoError(t, err)
+
+		content, err := os.ReadFile(destinationConfigPath)
+		require.NoError(t, err)
+		require.Contains(t, string(content), "current-context: context-2")
+		require.Contains(t, string(content), "namespace: ns2")
+	})
+}
+
 func copyFile(t *testing.T, sourcePath string, destinationPath string) {
 	data, err := os.ReadFile(sourcePath)
 	require.NoError(t, err)

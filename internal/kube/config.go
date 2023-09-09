@@ -85,6 +85,31 @@ func SwitchContextAndNamespace(ctx string, namespace string, destinationConfigPa
 	return nil
 }
 
+func SwitchContextAndNamespaceNew(ctx string, namespace string) error {
+	if len(ctx) == 0 {
+		return errors.New("context to switch to is required")
+	}
+
+	ca := clientcmd.NewDefaultPathOptions()
+	cfg, err := ca.GetStartingConfig()
+	if err != nil {
+		return fmt.Errorf("failed to get starting config: %v", err)
+	}
+
+	if !contextExists(cfg.Contexts, ctx) {
+		return fmt.Errorf("context with name %s does not exist in kube config file(s)", ctx)
+	}
+
+	cfg.CurrentContext = ctx
+	cfg.Contexts[ctx].Namespace = namespace
+
+	if err := clientcmd.ModifyConfig(ca, *cfg, true); err != nil {
+		return fmt.Errorf("failed to modify config: %v", err)
+	}
+
+	return nil
+}
+
 func config() (api.Config, error) {
 	// loading rules able to handle KUBECONFIG variable if set
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
