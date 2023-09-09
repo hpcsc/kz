@@ -36,7 +36,7 @@ type github struct {
 func NewGithubGateway() Github {
 	return &github{
 		httpClient: http.Client{
-			Timeout: 5 * time.Second,
+			Timeout: 20 * time.Second,
 		},
 	}
 }
