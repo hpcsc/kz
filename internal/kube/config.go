@@ -8,13 +8,14 @@ import (
 )
 
 func ContextsFromConfig() ([]string, error) {
-	kubeConfig, err := config()
+	ca := clientcmd.NewDefaultPathOptions()
+	cfg, err := ca.GetStartingConfig()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get starting config: %v", err)
 	}
 
 	var contexts []string
-	for c := range kubeConfig.Contexts {
+	for c := range cfg.Contexts {
 		contexts = append(contexts, c)
 	}
 
@@ -92,18 +93,6 @@ func SwitchContextAndNamespace(ctx string, namespace string) error {
 	}
 
 	return nil
-}
-
-func config() (api.Config, error) {
-	// loading rules able to handle KUBECONFIG variable if set
-	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
-	kubeConfig, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, nil).
-		RawConfig()
-	if err != nil {
-		return api.Config{}, fmt.Errorf("failed to load kube config: %v", err)
-	}
-
-	return kubeConfig, nil
 }
 
 func contextExists(contexts map[string]*api.Context, ctx string) bool {
