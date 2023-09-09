@@ -7,7 +7,6 @@ import (
 	"github.com/hpcsc/kz/internal/kube"
 	"github.com/hpcsc/kz/internal/tui"
 	"github.com/urfave/cli/v2"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
 func newContextSubcommand() *cli.Command {
@@ -91,7 +90,7 @@ func switchContext(ctx *cli.Context) error {
 		}
 	}
 
-	if err := kube.SwitchContextTo(contextToSwitch, clientcmd.RecommendedHomeFile); err != nil {
+	if err := kube.SwitchContextToNew(contextToSwitch); err != nil {
 		return err
 	}
 
