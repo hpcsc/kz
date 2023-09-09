@@ -7,7 +7,6 @@ import (
 	"github.com/hpcsc/kz/internal/kube"
 	"github.com/hpcsc/kz/internal/tui"
 	"github.com/urfave/cli/v2"
-	"k8s.io/client-go/tools/clientcmd"
 	"os"
 )
 
@@ -81,7 +80,7 @@ func switchContextAndNamespace(ctx *cli.Context) error {
 		}
 	}
 
-	if err := kube.SwitchContextAndNamespace(contextToSwitch, namespaceToSwitch, clientcmd.RecommendedHomeFile); err != nil {
+	if err := kube.SwitchContextAndNamespaceNew(contextToSwitch, namespaceToSwitch); err != nil {
 		return err
 	}
 
