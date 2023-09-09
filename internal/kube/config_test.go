@@ -126,6 +126,43 @@ func TestSwitchNamespaceTo(t *testing.T) {
 	})
 }
 
+func TestSwitchNamespaceToNew(t *testing.T) {
+	t.Run("return error when namespace to switch to is empty", func(t *testing.T) {
+		err := SwitchNamespaceToNew("")
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "namespace to switch to is required")
+	})
+
+	t.Run("return error when current context is not set", func(t *testing.T) {
+		destinationConfigPath := copyFileToTmp(t, "testdata/kubeconfig-1")
+		defer os.Remove(destinationConfigPath)
+
+		os.Setenv("KUBECONFIG", destinationConfigPath)
+		defer os.Unsetenv("KUBECONFIG")
+
+		err := SwitchNamespaceToNew("ns2")
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "unable to switch namespace to ns2 because current context is not set")
+	})
+
+	t.Run("set namespace of current context", func(t *testing.T) {
+		destinationConfigPath := copyFileToTmp(t, "testdata/kubeconfig-3")
+		defer os.Remove(destinationConfigPath)
+
+		os.Setenv("KUBECONFIG", destinationConfigPath)
+		defer os.Unsetenv("KUBECONFIG")
+
+		err := SwitchNamespaceToNew("ns2")
+		require.NoError(t, err)
+
+		content, err := os.ReadFile(destinationConfigPath)
+		require.NoError(t, err)
+		require.Contains(t, string(content), "namespace: ns2")
+	})
+}
+
 func TestSwitchContextAndNamespace(t *testing.T) {
 	t.Run("set current context and namespace", func(t *testing.T) {
 		destinationConfigPath := path.Join(os.TempDir(), fmt.Sprintf("kz-kube-config-%d", time.Now().UnixMilli()))
