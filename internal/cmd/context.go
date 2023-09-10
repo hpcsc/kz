@@ -12,6 +12,7 @@ import (
 func newContextSubcommand() *cli.Command {
 	return &cli.Command{
 		Name:    "ctx",
+		Usage:   "commands to work with Kubernetes contexts",
 		Aliases: []string{"context"},
 		Action:  switchContext,
 		Subcommands: []*cli.Command{

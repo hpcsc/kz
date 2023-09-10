@@ -14,10 +14,11 @@ var Version = "main"
 
 func Run() int {
 	app := &cli.App{
-		Name:    "kz",
-		Usage:   "switch Kubernetes namespace and context using partial name",
-		Version: Version,
-		Action:  switchFromRoot,
+		Name:                 "kz",
+		Usage:                "switch Kubernetes namespace and context using partial name",
+		Version:              Version,
+		EnableBashCompletion: true,
+		Action:               switchFromRoot,
 		Commands: []*cli.Command{
 			newNamespaceSubcommand(),
 			newContextSubcommand(),

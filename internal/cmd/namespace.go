@@ -13,6 +13,7 @@ import (
 func newNamespaceSubcommand() *cli.Command {
 	return &cli.Command{
 		Name:    "ns",
+		Usage:   "commands to work with Kubernetes namespaces",
 		Aliases: []string{"namespace"},
 		Action:  switchNamespace,
 		Subcommands: []*cli.Command{

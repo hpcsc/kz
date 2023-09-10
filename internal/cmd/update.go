@@ -12,6 +12,7 @@ import (
 func newUpdateSubcommand() *cli.Command {
 	return &cli.Command{
 		Name:        "update",
+		Usage:       "Update to latest release version",
 		Description: "Update to latest release version",
 		Action:      update,
 	}
