@@ -38,9 +38,16 @@ func switchFromRoot(ctx *cli.Context) error {
 	if ctx.Args().Len() == 1 {
 		query := ctx.Args().First()
 		return switchContext(query)
-	} else if ctx.Args().Len() > 1 {
+	}
+
+	if ctx.Args().Len() > 1 {
 		contextQuery := ctx.Args().Get(0)
 		namespaceQuery := ctx.Args().Get(1)
+
+		if contextQuery == "-" {
+			return switchNamespace(namespaceQuery)
+		}
+
 		return switchContextAndNamespace(contextQuery, namespaceQuery)
 	}
 

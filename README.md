@@ -28,10 +28,11 @@ source /etc/bash_completion.d/kz
 
 ```shell
 kz ctx sync # copy all context names from your kube config to kz configuration file
-kz ns add ns1 ns2 ns3 # ask kz to track 3 namespaces ns1, ns2, ns3
+kz ns add ns1 ns2 ns3 # track 3 namespaces ns1, ns2, ns3
 kz ctx list # list contexts tracked by kz
 kz ns list  # list namespaces tracked by kz
-kz sys 2  # ask kz to search for any context matching the text `sys` and any namespace matching the text `2` and switch to those
-kz sys  # ask kz to search for any context matching the text `sys` and switch current context to that
-kz ns 2  # ask kz to search for any namespace matching the text `2` and switch namespace of current context to that
+kz sys 2  # switch to context matching `sys` and namespace matching the `2`
+kz sys  # switch to context matching `sys`
+kz ns 2  # switch to namespace matching `2` (using current context)
+kz - 2  # same like `kz ns 2`
 ```

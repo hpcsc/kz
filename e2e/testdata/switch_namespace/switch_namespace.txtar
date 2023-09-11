@@ -2,11 +2,13 @@ mkdir $HOME/.kube
 cp kubeconfig $HOME/.kube/config
 exec kz ctx sync
 exec kz ctx 2
-exec kz ns add ns1
+exec kz ns add ns1 ns2
 exec kz ns 1
 stdout 'switched to namespace ns1'
 exec kz ns not-existing
 stdout 'switched to namespace not-existing'
+exec kz - 2
+stdout 'switched to namespace ns2'
 
 -- kubeconfig --
 apiVersion: v1
