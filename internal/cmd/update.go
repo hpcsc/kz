@@ -14,11 +14,11 @@ func newUpdateSubcommand() *cli.Command {
 		Name:        "update",
 		Usage:       "Update to latest release version",
 		Description: "Update to latest release version",
-		Action:      update,
+		Action:      noArgumentsAction(update),
 	}
 }
 
-func update(ctx *cli.Context) error {
+func update() error {
 	currentExecutable, err := os.Executable()
 	if err != nil {
 		return err

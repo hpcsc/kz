@@ -14,23 +14,23 @@ func newContextSubcommand() *cli.Command {
 		Name:    "ctx",
 		Usage:   "commands to work with Kubernetes contexts",
 		Aliases: []string{"context"},
-		Action:  switchContext,
+		Action:  oneArgumentsAction(switchContext, "context name query is required"),
 		Subcommands: []*cli.Command{
 			{
 				Name:   "sync",
 				Usage:  "sync Kubernetes contexts from kube config files",
-				Action: syncContexts,
+				Action: noArgumentsAction(syncContexts),
 			},
 			{
 				Name:   "list",
 				Usage:  "list available Kubernetes contexts",
-				Action: listContexts,
+				Action: noArgumentsAction(listContexts),
 			},
 		},
 	}
 }
 
-func syncContexts(ctx *cli.Context) error {
+func syncContexts() error {
 	c, err := config.LoadFromDefaultLocation()
 	if err != nil {
 		return err
@@ -52,7 +52,7 @@ func syncContexts(ctx *cli.Context) error {
 	return nil
 }
 
-func listContexts(ctx *cli.Context) error {
+func listContexts() error {
 	cfg, err := config.LoadFromDefaultLocation()
 	if err != nil {
 		return err
@@ -65,12 +65,7 @@ func listContexts(ctx *cli.Context) error {
 	return nil
 }
 
-func switchContext(ctx *cli.Context) error {
-	query := ctx.Args().First()
-	if len(query) == 0 {
-		return fmt.Errorf("context name query is required")
-	}
-
+func switchContext(query string) error {
 	cfg, err := config.LoadFromDefaultLocation()
 	if err != nil {
 		return err

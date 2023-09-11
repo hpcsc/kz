@@ -36,18 +36,18 @@ func Run() int {
 
 func switchFromRoot(ctx *cli.Context) error {
 	if ctx.Args().Len() == 1 {
-		return switchContext(ctx)
+		query := ctx.Args().First()
+		return switchContext(query)
 	} else if ctx.Args().Len() > 1 {
-		return switchContextAndNamespace(ctx)
+		contextQuery := ctx.Args().Get(0)
+		namespaceQuery := ctx.Args().Get(1)
+		return switchContextAndNamespace(contextQuery, namespaceQuery)
 	}
 
 	return fmt.Errorf("context name query is required")
 }
 
-func switchContextAndNamespace(ctx *cli.Context) error {
-	contextQuery := ctx.Args().Get(0)
-	namespaceQuery := ctx.Args().Get(1)
-
+func switchContextAndNamespace(contextQuery string, namespaceQuery string) error {
 	cfg, err := config.LoadFromDefaultLocation()
 	if err != nil {
 		return err

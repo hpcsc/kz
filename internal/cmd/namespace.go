@@ -15,33 +15,28 @@ func newNamespaceSubcommand() *cli.Command {
 		Name:    "ns",
 		Usage:   "commands to work with Kubernetes namespaces",
 		Aliases: []string{"namespace"},
-		Action:  switchNamespace,
+		Action:  oneArgumentsAction(switchNamespace, "namespace name query is required"),
 		Subcommands: []*cli.Command{
 			{
 				Name:   "add",
 				Usage:  "track a Kubernetes namespace",
-				Action: addNamespaces,
+				Action: sliceArgumentsAction(addNamespaces, "no namespaces provided"),
 			},
 			{
 				Name:   "list",
 				Usage:  "list tracked Kubernetes namespaces",
-				Action: listNamespaces,
+				Action: noArgumentsAction(listNamespaces),
 			},
 			{
 				Name:   "delete",
 				Usage:  "delete tracked Kubernetes namespaces",
-				Action: deleteNamespaces,
+				Action: sliceArgumentsAction(deleteNamespaces, "no namespaces provided"),
 			},
 		},
 	}
 }
 
-func addNamespaces(ctx *cli.Context) error {
-	toBeAdded := ctx.Args().Slice()
-	if len(toBeAdded) == 0 {
-		return fmt.Errorf("no namespaces provided")
-	}
-
+func addNamespaces(toBeAdded []string) error {
 	c, err := config.LoadFromDefaultLocation()
 	if err != nil {
 		return err
@@ -58,7 +53,7 @@ func addNamespaces(ctx *cli.Context) error {
 	return nil
 }
 
-func listNamespaces(ctx *cli.Context) error {
+func listNamespaces() error {
 	c, err := config.LoadFromDefaultLocation()
 	if err != nil {
 		return err
@@ -76,12 +71,7 @@ func listNamespaces(ctx *cli.Context) error {
 	return nil
 }
 
-func deleteNamespaces(ctx *cli.Context) error {
-	toBeDeleted := ctx.Args().Slice()
-	if len(toBeDeleted) == 0 {
-		return fmt.Errorf("no namespaces provided")
-	}
-
+func deleteNamespaces(toBeDeleted []string) error {
 	c, err := config.LoadFromDefaultLocation()
 	if err != nil {
 		return err
@@ -98,12 +88,7 @@ func deleteNamespaces(ctx *cli.Context) error {
 	return nil
 }
 
-func switchNamespace(ctx *cli.Context) error {
-	query := ctx.Args().First()
-	if len(query) == 0 {
-		return fmt.Errorf("namespace name query is required")
-	}
-
+func switchNamespace(query string) error {
 	cfg, err := config.LoadFromDefaultLocation()
 	if err != nil {
 		return err
